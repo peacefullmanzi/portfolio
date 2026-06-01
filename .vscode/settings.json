@@ -1,0 +1,13 @@
+{
+  // Disable VS Code's built-in CSS validator — it doesn't understand
+  // Tailwind v4 at-rules like @theme, @utility, @source, etc.
+  // The Tailwind CSS IntelliSense extension provides correct validation.
+  "css.validate": false,
+  "scss.validate": false,
+
+  // Belt-and-suspenders: also silence the specific "unknown at rule" lint
+  "css.lint.unknownAtRules": "ignore",
+
+  // Tell the Tailwind extension where your config entry point is
+  "tailwindCSS.experimental.configFile": "./src/app/globals.css"
+}

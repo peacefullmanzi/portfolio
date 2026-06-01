@@ -1,12 +1,12 @@
 "use client";
 
-import { motion, useTransform, useScroll, useSpring } from "framer-motion";
-import { useRef } from "react";
+import { motion } from "framer-motion";
+import { useEffect, useState } from "react";
 import ProjectCard from "./ProjectCard";
 
 const projects = [
   {
-    title: "Tablio",
+    title: "temfy",
     description: "A modern SaaS application for streamlining table management in restaurants. Built with Next.js, Tailwind, and Firebase.",
     tags: ["Next.js", "TypeScript", "Tailwind", "Firebase"],
     link: "#",
@@ -31,57 +31,63 @@ const projects = [
   },
 ];
 
+const marqueeProjects = [...projects, ...projects];
+
 export default function HorizontalProjects() {
-  const targetRef = useRef<HTMLDivElement | null>(null);
-  
-  // Track scroll depth of this 300vh section to drive the horizontal scroll percentage
-  const { scrollYProgress } = useScroll({
-    target: targetRef,
-  });
+  const [duration, setDuration] = useState(30);
 
-  // Apply a spring physics layer to make the scroll incredibly buttery smooth
-  const smoothProgress = useSpring(scrollYProgress, {
-    stiffness: 100,
-    damping: 25,
-    restDelta: 0.001
-  });
-
-  // Calculate the horizontal shift based on the smoothed progress
-  const x = useTransform(smoothProgress, [0, 1], ["0%", "-75%"]);
+  useEffect(() => {
+    // Speed up on mobile (lower duration = faster)
+    const handleResize = () => {
+      if (window.innerWidth < 768) {
+        setDuration(15);
+      } else {
+        setDuration(35);
+      }
+    };
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   return (
-    <section ref={targetRef} id="projects" className="relative h-[300vh] scroll-mt-20">
-      <div className="sticky top-0 flex h-screen items-center overflow-hidden">
-        
-        {/* Sticky Title */}
-        <div className="absolute top-24 md:top-32 left-0 right-0 w-full pointer-events-none z-10">
-          <div className="w-full text-center">
-            <motion.h2 
-              initial={{ opacity: 0, scale: 0.9 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.8, ease: "easeOut" }}
-              className="text-4xl md:text-5xl font-medium text-white drop-shadow-lg"
-            >
-              Selected <span className="text-primary/90">Projects</span>
-            </motion.h2>
-          </div>
-        </div>
-
-        {/* Horizontal Card Deck - Smaller Cards, Wide Span */}
-        <motion.div 
-          style={{ x }} 
-          className="flex gap-8 pl-[2.5vw] pt-16 md:pt-40 pb-8 h-[65vh] md:h-[70vh] max-h-[750px] min-h-[450px]"
+    <section id="projects" className="relative pt-24 md:pt-32 pb-16 md:pb-0 overflow-hidden">
+      <div className="w-full text-center px-4 mb-16">
+        <motion.h2
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-20%" }}
+          transition={{ duration: 0.8, ease: "circOut" }}
+          className="text-5xl md:text-7xl font-bold tracking-tighter text-white"
         >
-          {projects.map((project, idx) => (
-            <div key={idx} className="w-[85vw] md:w-[480px] h-full shrink-0">
-               <ProjectCard {...project} />
+          Selected <span className="text-primary italic">Projects</span>
+        </motion.h2>
+      </div>
+
+      <div className="relative flex overflow-hidden">
+        <motion.div
+          animate={{
+            x: [0, "-50%"],
+          }}
+          transition={{
+            x: {
+              repeat: Infinity,
+              repeatType: "loop",
+              duration: duration,
+              ease: "linear",
+            },
+          }}
+          className="flex gap-6 md:gap-8 px-4 w-fit"
+        >
+          {marqueeProjects.map((project, idx) => (
+            <div 
+              key={idx} 
+              className="w-[75vw] md:w-[500px] h-[350px] md:h-[450px] shrink-0"
+            >
+              <ProjectCard {...project} />
             </div>
           ))}
-          {/* Subtle spacer block at the end */}
-          <div className="w-[5vw] shrink-0" />
         </motion.div>
-
       </div>
     </section>
   );

@@ -15,8 +15,9 @@ export default function ProjectCard({ title, description, tags, link }: ProjectC
   return (
     <Link href={link} target="_blank">
       <motion.div
-        whileHover={{ y: -5 }}
-        className="group relative flex flex-col justify-between p-10 rounded-3xl bg-white/5 backdrop-blur-xl border border-white/10 hover:bg-white/10 hover:border-white/20 transition-all duration-300 h-full"
+        whileHover={{ y: -8 }}
+        transition={{ type: "spring", stiffness: 300, damping: 20 }}
+        className="group relative flex flex-col justify-between p-10 rounded-3xl bg-white/5 backdrop-blur-xl border border-white/10 group-hover:bg-white/[0.07] group-hover:border-primary/20 transition-colors duration-300 h-full"
       >
         <div>
           <div className="flex justify-between items-start mb-6">
